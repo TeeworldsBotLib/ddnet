@@ -20,6 +20,10 @@
 #include <game/server/score.h>
 #include <game/server/teams.h>
 
+#include <shared/types.h>
+#include <bots/sample.h>
+#include <server/set_state.h>
+
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
 // Character, "physical" player's part
@@ -753,6 +757,16 @@ void CCharacter::PreTick()
 
 void CCharacter::Tick()
 {
+	CServerBotStateOut Bot;
+	CServerBotStateIn State;
+
+	TWBL::SetState(this, &State);
+	State.m_pCollision = Collision();
+
+	TWBL::SampleTick(&State, &Bot);
+
+	m_SavedInput.m_Direction = Bot.m_Direction;
+
 	if(g_Config.m_SvNoWeakHook)
 	{
 		if(m_Paused)

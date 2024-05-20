@@ -2596,7 +2596,6 @@ int CServer::LoadMap(const char *pMapName)
 	return 1;
 }
 
-#ifdef CONF_DEBUG
 void CServer::UpdateDebugDummies(bool ForceDisconnect)
 {
 	if(m_PreviousDebugDummies == g_Config.m_DbgDummies && !ForceDisconnect)
@@ -2633,7 +2632,6 @@ void CServer::UpdateDebugDummies(bool ForceDisconnect)
 
 	m_PreviousDebugDummies = ForceDisconnect ? 0 : g_Config.m_DbgDummies;
 }
-#endif
 
 int CServer::Run()
 {
@@ -2788,9 +2786,7 @@ int CServer::Run()
 						}
 					}
 
-#ifdef CONF_DEBUG
 					UpdateDebugDummies(true);
-#endif
 					GameServer()->OnShutdown(m_pPersistentData);
 
 					for(int ClientId = 0; ClientId < MAX_CLIENTS; ClientId++)
@@ -2880,9 +2876,7 @@ int CServer::Run()
 			{
 				GameServer()->OnPreTickTeehistorian();
 
-#ifdef CONF_DEBUG
 				UpdateDebugDummies(false);
-#endif
 
 				for(int c = 0; c < MAX_CLIENTS; c++)
 				{

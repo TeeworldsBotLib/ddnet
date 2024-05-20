@@ -2595,7 +2595,18 @@ if(SERVER)
     "src/game/generated/server_data.h"
     "src/game/generated/wordlist.h"
   )
-  set(SERVER_SRC ${ENGINE_SERVER} ${GAME_SERVER} ${GAME_GENERATED_SERVER})
+
+  set(TWBL_ROOT src/external/TeeworldsBotLib)
+  add_subdirectory(${TWBL_ROOT})
+  include_directories(${TWBL_ROOT}/src)
+  FILE(GLOB TWBL_SRC
+    ${TWBL_ROOT}/src/shared/*.cpp
+    ${TWBL_ROOT}/src/shared/*.h
+    ${TWBL_ROOT}/src/bots/*.cpp
+    ${TWBL_ROOT}/src/bots/*.h
+  )
+
+  set(SERVER_SRC ${ENGINE_SERVER} ${GAME_SERVER} ${GAME_GENERATED_SERVER} ${TWBL_SRC})
   if(TARGET_OS STREQUAL "windows")
     set(SERVER_ICON "other/icons/DDNet-Server.rc")
   else()
