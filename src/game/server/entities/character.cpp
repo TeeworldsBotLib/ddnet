@@ -20,9 +20,10 @@
 #include <game/server/score.h>
 #include <game/server/teams.h>
 
-#include <shared/types.h>
 #include <bots/sample.h>
 #include <server/set_state.h>
+#include <shared/hotreload.h>
+#include <shared/types.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
@@ -763,7 +764,16 @@ void CCharacter::Tick()
 	TWBL::SetState(this, &State);
 	State.m_pCollision = Collision();
 
-	TWBL::SampleTick(&State, &Bot);
+	FTwbl_BotTick BotTick;
+	void *pHandle = TWBL::LoadTick("./libtwbl_bottick.so", "Sample", &BotTick);
+
+	if(pHandle)
+	{
+		BotTick(&State, &Bot);
+		dlclose(pHandle);
+	}
+	else
+		Twbl_SampleTick(&State, &Bot);
 
 	m_SavedInput.m_Direction = Bot.m_Direction;
 
