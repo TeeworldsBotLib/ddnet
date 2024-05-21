@@ -2621,8 +2621,7 @@ if(SERVER)
   )
 
   # twbl start
-  set(TWBL_ROOT src/external/TeeworldsBotLib)
-  add_subdirectory(${TWBL_ROOT})
+  set(TWBL_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/external/TeeworldsBotLib)
   include_directories(${TWBL_ROOT}/src)
   FILE(GLOB TWBL_SRC
     ${TWBL_ROOT}/src/shared/*.cpp
@@ -2631,8 +2630,21 @@ if(SERVER)
     ${TWBL_ROOT}/src/bots/*.h
   )
 
-  add_library(twbl_bottick SHARED ${TWBL_SRC})
+  add_library(twbl_bottick_lite SHARED ${TWBL_SRC})
+  target_compile_options(twbl_bottick_lite PRIVATE -std=gnu++17)
+
   set(SERVER_SRC ${SERVER_SRC} ${TWBL_SRC})
+  add_library(twbl_bottick SHARED
+    ${GAME_SHARED}
+    ${TWBL_SRC}
+    ${GAME_GENERATED_SHARED})
+
+  target_compile_options(twbl_bottick PRIVATE -std=gnu++17)
+  target_compile_definitions(twbl_bottick PRIVATE TWBL_SHARED_OBJECT=1)
+
+  target_include_directories(twbl_bottick PRIVATE src)
+  target_include_directories(twbl_bottick PRIVATE ${PROJECT_BINARY_DIR}/src)
+  add_cxx_compiler_flag_if_supported(OUR_FLAGS_LINK -rdynamic)
   # twbl end
 
   # Target

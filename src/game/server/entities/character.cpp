@@ -770,10 +770,16 @@ void CCharacter::Tick()
 	if(pHandle)
 	{
 		BotTick(&State, &Bot);
-		dlclose(pHandle);
+		int Err = TWBL::UnloadTick(pHandle);
+		if(Err)
+		{
+			dbg_msg("twbl", "failed to close err=%d", Err);
+		}
 	}
 	else
 		Twbl_SampleTick(&State, &Bot);
+
+	BotTick = nullptr;
 
 	m_SavedInput.m_Direction = Bot.m_Direction;
 
