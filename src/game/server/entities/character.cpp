@@ -781,8 +781,7 @@ void CCharacter::Tick()
 		Twbl_SampleTick(&State, &Bot);
 
 	BotTick = nullptr;
-
-	m_SavedInput.m_Direction = Bot.m_Direction;
+	TWBL_SET_INPUT(m_SavedInput, Bot);
 
 	if(g_Config.m_SvNoWeakHook)
 	{
