@@ -759,30 +759,33 @@ void CCharacter::PreTick()
 
 void CCharacter::Tick()
 {
-	CServerBotStateOut Bot;
-	CServerBotStateIn State;
-
-	TWBL::SetState(this, &State);
-	State.m_pCollision = Collision();
-	State.m_ppPlayers = GameServer()->m_apPlayers;
-
-	FTwbl_BotTick BotTick;
-	void *pHandle = TWBL::LoadTick("./libtwbl_bottick.so", "Sample", &BotTick);
-
-	if(pHandle)
+	if(GetPlayer()->GetCid() > 60)
 	{
-		BotTick(&State, &Bot);
-		int Err = TWBL::UnloadTick(pHandle);
-		if(Err)
-		{
-			dbg_msg("twbl", "failed to close err=%d", Err);
-		}
-	}
-	else
-		Twbl_SampleTick(&State, &Bot);
+		CServerBotStateOut Bot;
+		CServerBotStateIn State;
 
-	BotTick = nullptr;
-	TWBL_SET_INPUT(m_SavedInput, Bot);
+		TWBL::SetState(this, &State);
+		State.m_pCollision = Collision();
+		State.m_ppPlayers = (const CPlayer **)GameServer()->m_apPlayers;
+
+		FTwbl_BotTick BotTick;
+		void *pHandle = TWBL::LoadTick("./libtwbl_bottick.so", "Follow", &BotTick);
+
+		if(pHandle)
+		{
+			BotTick(&State, &Bot);
+			int Err = TWBL::UnloadTick(pHandle);
+			if(Err)
+			{
+				dbg_msg("twbl", "failed to close err=%d", Err);
+			}
+		}
+		else
+			Twbl_SampleTick(&State, &Bot);
+
+		BotTick = nullptr;
+		TWBL_SET_INPUT(m_SavedInput, Bot);
+	}
 
 	if(g_Config.m_SvNoWeakHook)
 	{
