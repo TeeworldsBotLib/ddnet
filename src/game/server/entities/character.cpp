@@ -764,6 +764,7 @@ void CCharacter::Tick()
 
 	TWBL::SetState(this, &State);
 	State.m_pCollision = Collision();
+	State.m_ppPlayers = GameServer()->m_apPlayers;
 
 	FTwbl_BotTick BotTick;
 	void *pHandle = TWBL::LoadTick("./libtwbl_bottick.so", "Sample", &BotTick);
