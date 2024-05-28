@@ -768,18 +768,12 @@ void CCharacter::Tick()
 		State.m_pCollision = Collision();
 		State.m_ppPlayers = GameServer()->m_apPlayers;
 
+		static TWBL::CHotreloader Hotreloader("./libtwbl_bottick.so", "Follow");
 		FTwbl_BotTick BotTick;
-		void *pHandle = TWBL::LoadTick("./libtwbl_bottick.so", "Follow", &BotTick);
+		void *pHandle = Hotreloader.LoadTick(&BotTick);
 
 		if(pHandle)
-		{
 			BotTick(&State, &Bot);
-			int Err = TWBL::UnloadTick(pHandle);
-			if(Err)
-			{
-				dbg_msg("twbl", "failed to close err=%d", Err);
-			}
-		}
 		else
 			Twbl_SampleTick(&State, &Bot);
 
