@@ -13,7 +13,7 @@ class CLayerGroup;
 class CMapView : public CEditorComponent
 {
 public:
-	void Init(CEditor *pEditor) override;
+	void OnInit(CEditor *pEditor) override;
 	void OnReset() override;
 	void OnMapLoad() override;
 
@@ -35,8 +35,6 @@ public:
 	 * Scale length according to zoom value.
 	 */
 	float ScaleLength(float Value) const;
-
-	bool m_ShowPicker; // TODO: make private
 
 	float GetWorldZoom() const;
 

@@ -60,7 +60,7 @@ void CUpdaterFetchTask::OnProgress()
 
 void CUpdaterFetchTask::OnCompletion(EHttpState State)
 {
-	const char *pFileName = 0;
+	const char *pFileName = nullptr;
 	for(const char *pPath = Dest(); *pPath; pPath++)
 		if(*pPath == '/')
 			pFileName = pPath + 1;
@@ -98,13 +98,13 @@ void CUpdater::Init(CHttp *pHttp)
 	m_pHttp = pHttp;
 }
 
-void CUpdater::SetCurrentState(int NewState)
+void CUpdater::SetCurrentState(EUpdaterState NewState)
 {
 	CLockScope ls(m_Lock);
 	m_State = NewState;
 }
 
-int CUpdater::GetCurrentState()
+IUpdater::EUpdaterState CUpdater::GetCurrentState()
 {
 	CLockScope ls(m_Lock);
 	return m_State;
@@ -164,8 +164,7 @@ bool CUpdater::MoveFile(const char *pFile)
 
 void CUpdater::Update()
 {
-	auto State = GetCurrentState();
-	switch(State)
+	switch(GetCurrentState())
 	{
 	case IUpdater::GOT_MANIFEST:
 		PerformUpdate();
@@ -183,7 +182,7 @@ void CUpdater::Update()
 
 void CUpdater::AddFileJob(const char *pFile, bool Job)
 {
-	m_FileJobs.emplace_front(std::make_pair(pFile, Job));
+	m_FileJobs.emplace_front(pFile, Job);
 }
 
 bool CUpdater::ReplaceClient()
