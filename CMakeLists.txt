@@ -2815,14 +2815,21 @@ if(SERVER)
   set(TWBL_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/external/TeeworldsBotLib)
   include_directories(${TWBL_ROOT}/src)
   FILE(GLOB TWBL_SRC
-    ${TWBL_ROOT}/src/shared/*.cpp
-    ${TWBL_ROOT}/src/shared/*.h
+    ${TWBL_ROOT}/src/twbl/*/*.cpp
+    ${TWBL_ROOT}/src/twbl/*/*.h
+    ${TWBL_ROOT}/src/twbl/*.cpp
+    ${TWBL_ROOT}/src/twbl/*.h
+    ${TWBL_ROOT}/src/bots/*/*.cpp
+    ${TWBL_ROOT}/src/bots/*/*.h
     ${TWBL_ROOT}/src/bots/*.cpp
     ${TWBL_ROOT}/src/bots/*.h
+    ${TWBL_ROOT}/src/engines/*/*.cpp
+    ${TWBL_ROOT}/src/engines/*/*.h
+    ${TWBL_ROOT}/src/engines/*.cpp
+    ${TWBL_ROOT}/src/engines/*.h
+    ${TWBL_ROOT}/src/server/*.cpp
+    ${TWBL_ROOT}/src/server/*.h
   )
-
-  add_library(twbl_bottick_lite SHARED ${TWBL_SRC})
-  target_compile_options(twbl_bottick_lite PRIVATE -std=gnu++20)
 
   set(SERVER_SRC ${SERVER_SRC} ${TWBL_SRC})
   add_library(twbl_bottick SHARED
@@ -2831,6 +2838,7 @@ if(SERVER)
     ${GAME_GENERATED_SHARED})
 
   target_compile_options(twbl_bottick PRIVATE -std=gnu++20)
+  target_compile_options(twbl_bottick PRIVATE -Wno-deprecated-enum-float-conversion) # c++20 arithmetic between floating-point type and enumeration type
   target_compile_definitions(twbl_bottick PRIVATE TWBL_SHARED_OBJECT=1)
 
   target_include_directories(twbl_bottick PRIVATE src)

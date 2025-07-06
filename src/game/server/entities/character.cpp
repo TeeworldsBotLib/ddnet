@@ -4,6 +4,7 @@
 #include "laser.h"
 #include "pickup.h"
 #include "projectile.h"
+#include "twbl/state.h"
 
 #include <antibot/antibot_data.h>
 
@@ -21,10 +22,10 @@
 #include <game/server/score.h>
 #include <game/server/teams.h>
 
-#include <bots/sample.h>
+#include <bots/sample/sample.h>
 #include <server/set_state.h>
-#include <shared/hotreload.h>
-#include <shared/types.h>
+#include <twbl/hotreload.h>
+#include <twbl/types.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
@@ -776,21 +777,28 @@ void CCharacter::Tick()
 {
 	if(GetPlayer()->GetCid() > 60)
 	{
-		CServerBotStateOut Bot;
 		CServerBotStateIn State;
+		CServerBotStateOut Bot;
 
 		TWBL::SetState(this, &State);
+		State.m_GameTick = GameServer()->Server()->Tick();
 		State.m_pCollision = Collision();
 		State.m_ppPlayers = GameServer()->m_apPlayers;
+		State.m_pCallbackCtx = &GameServer()->m_TwblCallbackCtx;
 
-		static TWBL::CHotreloader Hotreloader("./libtwbl_bottick.so", "Follow");
+		// nicer would be a member variable and not calling Init every tick
+		static TWBL::CHotreloader s_Hotreloader;
+		s_Hotreloader.Init("./libtwbl_bottick.so", "Follow");
+
 		FTwbl_BotTick BotTick;
-		void *pHandle = Hotreloader.LoadTick(&BotTick);
+		void *pHandle = s_Hotreloader.LoadTick(&BotTick);
+
+		CTwblPersistentState *pPersistentState = &GameServer()->m_aTwblPersistentState[GetPlayer()->GetCid()];
 
 		if(pHandle)
-			BotTick(&State, &Bot);
+			BotTick(&State, &Bot, pPersistentState, sizeof(*pPersistentState));
 		else
-			Twbl_SampleTick(&State, &Bot);
+			Twbl_SampleTick(&State, &Bot, pPersistentState, sizeof(*pPersistentState));
 
 		BotTick = nullptr;
 		TWBL_SET_INPUT(m_SavedInput, Bot);

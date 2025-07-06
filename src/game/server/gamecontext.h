@@ -12,6 +12,11 @@
 #include <game/mapbugs.h>
 #include <game/voting.h>
 
+// twbl
+#include <server/ddnet_callback_ctx.h>
+#include <twbl/state.h>
+
+#include "engine/shared/protocol.h"
 #include "eventhandler.h"
 #include "gameworld.h"
 #include "teehistorian.h"
@@ -624,6 +629,9 @@ public:
 	void OnSetAuthed(int ClientId, int Level) override;
 
 	void ResetTuning();
+
+	TWBL::CDDNetCallbackCtx m_TwblCallbackCtx;
+	CTwblPersistentState m_aTwblPersistentState[MAX_CLIENTS];
 };
 
 static inline bool CheckClientId(int ClientId)
